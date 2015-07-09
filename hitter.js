@@ -45,7 +45,7 @@ function reapCandidates(map) {
       //console.log(i, xMap[i][id]);
       var thisId = map[i][id];
       var endedThisId = false;
-      Object.keys(stack).forEach(function(si) {
+      for (var si in stack) {
         si = parseInt(si);
         if (stack[si] === thisId) {
           delete stack[si];
@@ -59,7 +59,7 @@ function reapCandidates(map) {
             candidates[thisId] = [stack[si]];
           }
         }
-      });
+      }
       if (!endedThisId) {
         stack.push(thisId);
       }
