@@ -2,15 +2,22 @@ var canvas = document.getElementById('meow');
 var ctx = canvas.getContext('2d');
 canvas.style.background = 'lightblue';
 
-var totalBoxes = 2000,
-    averageSize = 2,
+var totalBoxes = 1000,
+    averageSize = 5,
+    leaveAfter = 100,
     speedFunction = function speed(i) {
-      return i / 4;
+      return 0;
     };
 
 var Box = function(args) {
   this.x = args.x;
   this.y = args.y;
+  this.mass = Math.sqrt((args.width || 1) * (args.height || 1));
+  this.vx = 0;
+  this.vy = 0;
+  this.ax = 0;
+  this.ay = 0;
+
   this.width = args.width;
   this.height = args.height;
   this.id = args.id;
@@ -19,13 +26,14 @@ var Box = function(args) {
 }
 
 Box.prototype.render = function(ctx) {
-  ctx.fillStyle = this.collided ? "red" : "orange";
+  ctx.fillStyle = this.collided ? "red" : "lightblue";
+  ctx.fillStyle = "orange";
   ctx.fillRect(this.x, this.y, this.width, this.height);
   ctx.fillStyle = "black";
   ctx.strokeRect(this.x-1, this.y-1, this.width+1, this.height+1);
   ctx.font = "16px sans-serif";
-  //ctx.fillStyle = "black";
-  //ctx.fillText(this.id, this.x-17, this.y-5);
+  ctx.fillStyle = "black";
+  //ctx.fillText(this.id, this.x+this.width/2, this.y+this.height/2);
 }
 
 function render(ctx, objects) {
@@ -69,7 +77,7 @@ function reapCandidates(map) {
 }
 
 function crossCandidates(xcand, ycand) {
-  var collided = {};
+  var collided = [];
   for (var x in xcand) {
     for (var yind in xcand[x]) {
       var y = xcand[x][yind];
@@ -103,6 +111,8 @@ function detectCollisions(objects) {
       yMap = [];
   for (var i in objects) {
     var obj = objects[i];
+    if (obj.vy === 0 && obj.vx === 0)
+      continue;
     populateMap(xMap, obj.x, obj.id);
     populateMap(xMap, obj.x + obj.width, obj.id);
     populateMap(yMap, obj.y, obj.id);
@@ -123,18 +133,37 @@ function handleCollisions(collisions, objects) {
     for (var j in collisions[i]) {
       var obj2 = objects[collisions[i][j]];
       obj2.collided = true;
+
+      var top, bottom;
+      if (obj1.y + obj1.height / 2 < obj2.y + obj2.height / 2)
+        top = obj1, bottom = obj2;
+      else
+        top = obj2, bottom = obj1;
+
+      top.y = bottom.y - top.height;
+
+      if (top.vy > 15)
+        top.vy *= -0.2;
+      else
+        top.vy = 0;
     }
   }
 }
 
 function update(objects, dt) {
+  var dt1000 = dt/1000;
+
+  var gravity = dt1000 * 9.8;
   for (var i in objects) {
     var obj = objects[i];
     obj.collided = false;
-    obj.y += obj.speed * dt/1000;
-    if (obj.y > 500) {
-      obj.y = 0;
-      obj.x = Math.random() * 480;
+    obj.y += obj.vy * dt1000;
+    obj.vy += obj.mass * gravity;
+
+    if (obj.y > 498 - obj.height) {
+      obj.y = 498 - obj.height;
+      obj.vx = obj.vy = obj.ax = obj.ay = 0;
+      //obj.x = Math.random() * 480;
     }
   }
 }
@@ -142,13 +171,13 @@ function update(objects, dt) {
 var lastTime = Date.now();
 var pass = leave = 0;
 function main(ctx, objects) {
-  handleCollisions(detectCollisions(objects), objects);
-  render(ctx, objects);
-
   var now = Date.now();
   var dt = now - lastTime;
-  update(objects, dt);
   lastTime = now;
+
+  update(objects, dt);
+  handleCollisions(detectCollisions(objects), objects);
+  render(ctx, objects);
 
   pass++;
   if (pass % 10 === 0) {
@@ -156,7 +185,7 @@ function main(ctx, objects) {
     pass = 0;
     leave++;
   }
-  if (leave > 10) {
+  if (leave > leaveAfter) {
     console.log('leaving so I dont break your computer');
     return;
   }
@@ -165,7 +194,7 @@ function main(ctx, objects) {
 }
 
 // then make the data and start the loop
-var boxes = [];
+var boxes;
 function createBoxes(n, s, speedFn) {
   boxes = [];
   for (var i = 0; i < n; i++) {
@@ -181,6 +210,7 @@ function createBoxes(n, s, speedFn) {
 }
 
 function goForIt() {
+  boxes = [];
   lastTime = Date.now();
   createBoxes(totalBoxes, averageSize, speedFunction);
   pass = leave = 0;
