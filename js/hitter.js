@@ -2,9 +2,9 @@ var canvas = document.getElementById('meow');
 var ctx = canvas.getContext('2d');
 canvas.style.background = 'lightblue';
 
-var totalBoxes = 1000,
-    averageSize = 5,
-    leaveAfter = 100,
+var totalBoxes = 100,
+    averageSize = 10,
+    leaveAfter = 50,
     speedFunction = function speed(i) {
       return 0;
     };
