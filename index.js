@@ -1,11 +1,3 @@
-// requirejs
-var requirejs = require('requirejs');
-requirejs.config({
-  baseUrl: __dirname + '/js',
-  nodeRequire: require
-});
-require = requirejs;
-
 // mount index and js
 var express = require('express');
 var app = express();
