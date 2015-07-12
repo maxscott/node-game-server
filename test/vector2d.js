@@ -3,7 +3,7 @@ var Vector2d;
 
 describe('Vector2d', function () {
   beforeEach(function () {
-   Vector2d = require('../../js/shared/vector2d');
+   Vector2d = require('../js/vector2d');
   });
 
   describe('new', function () {

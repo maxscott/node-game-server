@@ -3,7 +3,7 @@ var Physical;
 
 describe('Vector2d', function () {
   beforeEach(function () {
-    Physical = require('../../js/shared/physical');
+    Physical = require('../js/physical');
   });
 
   describe('new', function () {

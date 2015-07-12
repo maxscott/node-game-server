@@ -209,7 +209,7 @@ function createBoxes(n, s, speedFn) {
   }
 }
 
-function goForIt() {
+module.exports = function startSim() {
   boxes = [];
   lastTime = Date.now();
   createBoxes(totalBoxes, averageSize, speedFunction);
