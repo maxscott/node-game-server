@@ -18,7 +18,9 @@
   "homepage": "https://github.com/maxwerr/new-hits#readme",
   "dependencies": {
     "express": "^4.13.1",
-    "requirejs": "^2.1.18"
+    "requirejs": "^2.1.18",
+    "socket.io": "^1.3.5",
+    "socket.io-client": "^1.3.5"
   },
   "devDependencies": {
     "chai": "^3.0.0",

@@ -1,2 +1,3 @@
-var startSim = require('./hitter');
 require('./physical');
+
+var io = require('socket.io/socket.io.js')();
