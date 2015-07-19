@@ -10,23 +10,27 @@ var io = require('socket.io')(vanillaServer);
 vanillaServer.listen(process.env.PORT || 1234);
 
 // routing socket io events
-var StateManager = require('./js/stateManager');
-var stateManager = new StateManager(4);
+var ConnectionManager = require('./js/connectionManager');
+var connectionManager = new ConnectionManager(4);
+
+// used to socketio emit to players
+var Notifer = require('./js/notifier');
+var notifier = new Notifier(io);
 
 // put this elsewhere, here for now
 var Vector2d = require('./js/vector2d');
 
 io.on('connection', function onConnection(socket) {
-  stateManager.connection(socket);
-  console.log(stateManager.getRooms());
+  var room = connectionManager.connection(socket.conn.id);
+  notifier.joined(socket, room);
+  //gameSim.init(room);
 
-  socket.on('disconnect', function () {
-    stateManager.disconnect(socket);
-    console.log(stateManager.getRooms());
+  socket.on('disconnect', function onDisconnection () {
+    connectionManager.disconnect(socket.conn.id);
   });
 
   // Pure spitballing here
-  socket.on('game update', function (update) {
+  socket.on('gameupdate', function onGameUpdate (update) {
     var MOVED = 1,
         FIRED = 2,
         HIT = 4;
@@ -34,15 +38,15 @@ io.on('connection', function onConnection(socket) {
     var emissions = [];
 
     if (update.type && MOVED) {
-      emissions = emissions.concat(stateManager.moved(socket, new Vector2d(update[MOVED])));
+      emissions = emissions.concat(connectionManager.moved(socket, new Vector2d(update[MOVED])));
     }
 
     if (update.type && FIRED) {
-      emissions = emissions.concat(stateManager.fired(socket, new Vector2d(update[FIRED])));
+      emissions = emissions.concat(connectionManager.fired(socket, new Vector2d(update[FIRED])));
     }
 
     if (update.type && HIT) {
-      emissions = emissions.concat(stateManager.hit(socket, update[HIT]));
+      emissions = emissions.concat(connectionManager.hit(socket, update[HIT]));
     }
 
     emissions.forEach(function (em) {
