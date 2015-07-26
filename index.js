@@ -5,9 +5,9 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/js'));
 
 // socket io
-var vanillaServer = require('http').createServer(app);
-var io = require('socket.io')(vanillaServer);
-vanillaServer.listen(process.env.PORT || 1234);
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+server.listen(process.env.PORT || 1234);
 
 // routing socket io events
 var ConnectionManager = require('./js/connectionManager');
@@ -22,11 +22,12 @@ var Vector2d = require('./js/vector2d');
 
 io.on('connection', function onConnection(socket) {
   var room = connectionManager.connection(socket.conn.id);
-  notifier.joined(socket, room);
+  notifier.joined(socket.conn.id, room);
   //gameSim.init(room);
 
   socket.on('disconnect', function onDisconnection () {
     connectionManager.disconnect(socket.conn.id);
+    notifier.left(socket.conn.id, room);
   });
 
   // Pure spitballing here
