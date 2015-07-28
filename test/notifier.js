@@ -1,10 +1,13 @@
 var expect = require('chai').expect;
 var Notifier, notifier;
-var messages = {};
+var messages = [];
 
-var fakeSocketIO = { 
-  emit: function (socket, message) {
-    messages[socket] = message;
+var fakeSocketIO = {
+  emit: function (name, message) {
+    messages.push({ type: name, message: message });
+  },
+  to: function (whatever) {
+    return fakeSocketIO;
   }
 };
 
@@ -20,33 +23,34 @@ describe('Notifier', function () {
 
   describe('joined', function () {
     beforeEach(function () {
-      messages ={};
+      messages = [];
     });
 
     it('sends a joined message to everyone in the room', function () {
-      notifier.joined("123", { players: { "123": {}, "456": {} }});
+      notifier.joined("123", { players: { "123": {}, "456": {}, "another": {} }});
 
-      var expectMsg = { type: "joined", who: "123" };
-      expect(messages).to.deep.equal({
-        "123": expectMsg,
-        "456": expectMsg
-      });
+      var expectMsg = { who: "123" };
+      expect(messages).to.deep.equal([
+        { type: "joined", message: expectMsg },
+        { type: "joined", message: expectMsg },
+        { type: "joined", message: expectMsg }
+      ]);
     });
   });
 
   describe('left', function () {
     beforeEach(function () {
-      messages ={};
+      messages = [];
     });
 
     it('sends a joined message to everyone in the room', function () {
       notifier.left("123", { players: { "123": {}, "456": {} }});
-      
-      var expectMsg = { type: "left", who: "123" };
-      expect(messages).to.deep.equal({
-        "123": expectMsg,
-        "456": expectMsg
-      });
+
+      var expectMsg = { who: "123" };
+      expect(messages).to.deep.equal([
+        { type: "left", message: expectMsg },
+        { type: "left", message: expectMsg }
+      ]);
     });
   });
 });

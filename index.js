@@ -14,19 +14,19 @@ var ConnectionManager = require('./js/connectionManager');
 var connectionManager = new ConnectionManager(4);
 
 // used to socketio emit to players
-var Notifer = require('./js/notifier');
+var Notifier = require('./js/notifier');
 var notifier = new Notifier(io);
 
 // put this elsewhere, here for now
 var Vector2d = require('./js/vector2d');
 
 io.on('connection', function onConnection(socket) {
-  var room = connectionManager.connection(socket.conn.id);
+  var room = connectionManager.join(socket.conn.id);
   notifier.joined(socket.conn.id, room);
   //gameSim.init(room);
 
   socket.on('disconnect', function onDisconnection () {
-    connectionManager.disconnect(socket.conn.id);
+    connectionManager.leave(socket.conn.id);
     notifier.left(socket.conn.id, room);
   });
 
