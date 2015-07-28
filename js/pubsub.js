@@ -1,7 +1,7 @@
 
 var topics = [];
 
-var _this = module.exports = {
+module.exports = {
 
   getTopics: function getTopics () {
     return topics;
