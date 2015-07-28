@@ -7,7 +7,7 @@ app.use(express.static(__dirname + '/js'));
 // socket io
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-server.listen(process.env.PORT || 1234);
+server.listen(process.env.PORT || 12345);
 
 // routing socket io events
 var ConnectionManager = require('./js/connectionManager');
