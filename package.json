@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "mocha test/* --watch --reporter min"
+    "test": "mocha test/* --watch --reporter min",
+    "setup-dev": "rm -rf js/shared && ln -s ../../bj-shared js/shared",
+    "setup-prod": "rm -rf js/shared && git submodule add -f git@github.com:maxwerr/bj-shared js/shared && git submodule init && git submodule update"
   },
   "repository": {
     "type": "git",
