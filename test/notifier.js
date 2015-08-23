@@ -27,13 +27,14 @@ describe('Notifier', function () {
     });
 
     it('sends a joined message to everyone in the room', function () {
-      notifier.joined("123", { players: { "123": {}, "456": {}, "another": {} }});
+      var players = { players: { "123": {}, "456": {}, "another": {} } };
+      notifier.joined("123", players);
 
       var expectMsg = { who: "123" };
       expect(messages).to.deep.equal([
-        { type: "joined", message: expectMsg },
-        { type: "joined", message: expectMsg },
-        { type: "joined", message: expectMsg }
+        { type: "joined", message: players },
+        { type: "joined", message: players },
+        { type: "joined", message: players }
       ]);
     });
   });
@@ -43,7 +44,7 @@ describe('Notifier', function () {
       messages = [];
     });
 
-    it('sends a joined message to everyone in the room', function () {
+    it('sends a left message to everyone in the room', function () {
       notifier.left("123", { players: { "123": {}, "456": {} }});
 
       var expectMsg = { who: "123" };

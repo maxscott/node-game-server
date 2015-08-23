@@ -5,7 +5,7 @@ var Notifier = function Notifier (socketio) {
 
 Notifier.prototype.joined = function(playerId, room) {
   var message = {
-    who: playerId
+    players: room.players
   };
 
   for (var player in room.players) {
