@@ -49,6 +49,8 @@ ConnectionManager.prototype.join = function connection (socket) {
 
 ConnectionManager.prototype.leave = function disconnect (socket) {
   var room = this.roomsByPlayer[socket];
+  if (!room) return;
+
   delete room.players[socket];
   if (Object.keys(room.players).length === 0) {
     this.rooms.splice(this.rooms.indexOf(room), 1);

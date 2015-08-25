@@ -19,8 +19,10 @@ var notifier = new Notifier(io);
 
 io.on('connection', function onConnection(socket) {
 
+  var room = {};
+
   socket.on('join', function onJoin (options) {
-    var room = connectionManager.join(socket.conn.id);
+    room = connectionManager.join(socket.conn.id);
     notifier.joined(socket.conn.id, room);
     //gameSim.init(room);
   });
