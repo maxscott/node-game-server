@@ -1,4 +1,4 @@
-var Warbler = require('shared/Warbler');
+var Warbler = require('./shared/Warbler');
 
 var ConnectionManager = function ConnectionManager (roomSize) {
   this.rooms = [];
@@ -7,7 +7,7 @@ var ConnectionManager = function ConnectionManager (roomSize) {
 }
 
 ConnectionManager.prototype.join = function connection (socket) {
-  var player = new Warbler();
+  var player;
   var room;
 
   function roomIsFull (r) {
@@ -20,11 +20,26 @@ ConnectionManager.prototype.join = function connection (socket) {
   // no rooms or all full
   if (this.rooms.length === 0 || this.rooms.every(roomIsFull.bind(this))) {
     room = { players: { } };
+    player = new Warbler({
+      x: 100, y: 100,
+      radius: 20,
+      color: 'salmon',
+      color2: 'lightsalmon'
+    });
+    player.state = "joining";
     room.players[socket] = player;
     this.roomsByPlayer[socket] = room;
     this.rooms.push(room);
   } else {
     room = this.rooms.filter(roomNotFull.bind(this))[0];
+    var numPlayers = Object.keys(room.players).length;
+    player = new Warbler({
+      x: 100 * numPlayers, y: 100 * numPlayers,
+      radius: 20,
+      color: 'white',
+      color2: 'green'
+    });
+    player.state = "joining";
     room.players[socket] = player;
     this.roomsByPlayer[socket] = room;
   }
