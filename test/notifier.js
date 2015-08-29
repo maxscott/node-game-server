@@ -3,10 +3,12 @@ var Notifier, notifier;
 var messages = [];
 
 var fakeSocketIO = {
+  temp: "(no id specified)",
   emit: function (name, message) {
-    messages.push({ type: name, message: message });
+    messages.push({ type: name, to: fakeSocketIO.temp, message: message });
   },
   to: function (whatever) {
+    fakeSocketIO.temp = whatever;
     return fakeSocketIO;
   }
 };
@@ -27,14 +29,15 @@ describe('Notifier', function () {
     });
 
     it('sends a joined message to everyone in the room', function () {
-      var players = { players: { "123": {}, "456": {}, "another": {} } };
-      notifier.joined("123", players);
+      var newPlayer = { id: "123" };
+      var roomMessage = { players: { "123": newPlayer } };
+      var allPlayers = { players: { "123": {}, "456": {}, "another": {} } };
+      notifier.joined(newPlayer, allPlayers);
 
-      var expectMsg = { who: "123" };
       expect(messages).to.deep.equal([
-        { type: "joined", message: players },
-        { type: "joined", message: players },
-        { type: "joined", message: players }
+        { to: "123", type: "joined", message: allPlayers },
+        { to: "456", type: "joined", message: roomMessage },
+        { to: "another", type: "joined", message: roomMessage }
       ]);
     });
   });
@@ -49,8 +52,8 @@ describe('Notifier', function () {
 
       var expectMsg = { who: "123" };
       expect(messages).to.deep.equal([
-        { type: "left", message: expectMsg },
-        { type: "left", message: expectMsg }
+        { to: "123", type: "left", message: expectMsg },
+        { to: "456", type: "left", message: expectMsg }
       ]);
     });
   });

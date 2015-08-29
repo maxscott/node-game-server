@@ -13,24 +13,22 @@ describe('ConnectionManager', function () {
     });
 
     it('should return a room and add the player id', function () {
-      var room = connectionManager.join(123);
+      var joinObj = connectionManager.join(123);
 
       expect(connectionManager.getRooms().length).to.equal(1);
-      expect(Object.keys(room.players).length).to.equal(1);
-      expect(room.players[123].state).to.equal('joining');
+      expect(Object.keys(joinObj.room.players).length).to.equal(1);
     });
 
     it('should create 2 rooms for 5 players', function () {
-      var room;
+      var joinObj;
       [ { conn: { id: 123 } }, { conn: { id: 234 } },
         { conn: { id: 345 } }, { conn: { id: 456 } },
         { conn: { id: 567 } }
       ].forEach(function (fakeSocket) {
-        room = connectionManager.join(fakeSocket.conn.id);
+        joinObj = connectionManager.join(fakeSocket.conn.id);
       });
 
       expect(connectionManager.getRooms().length).to.equal(2);
-      expect(room.players[567].state).to.equal('joining');
     });
   });
 
@@ -46,8 +44,8 @@ describe('ConnectionManager', function () {
       ].forEach(function (fakeSocket) {
         connectionManager.join(fakeSocket);
       });
-      var room = connectionManager.leave({ conn: { id: 567 }});
-      expect(room.players).to.deep.equal({});
+      var joinObj = connectionManager.leave({ conn: { id: 567 }});
+      expect(joinObj.room.players).to.deep.equal({});
     });
   });
 });
