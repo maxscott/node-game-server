@@ -20,6 +20,7 @@ var notifier = new Notifier(io);
 io.on('connection', function onConnection(socket) {
 
   var joinObj = {};
+
   socket.on('join', function onJoin (joinRequest) {
     joinObj = connectionManager.join(socket.conn.id);
     notifier.joined(joinObj.player, joinObj.room);
@@ -29,5 +30,4 @@ io.on('connection', function onConnection(socket) {
     connectionManager.leave(socket.conn.id);
     notifier.left(socket.conn.id, joinObj.room || {}); // never had a room
   });
-
 });

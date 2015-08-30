@@ -25,9 +25,20 @@ ConnectionManager.prototype.join = function join (socket) {
     this.roomsByPlayer[socket] = room;
     this.rooms.push(room);
   } else {
-    player = Warbler.player2();
-    player.id = socket;
     room = this.rooms.filter(roomNotFull.bind(this))[0];
+    meow = Object.keys(room.players);
+
+    playerNumbers = meow.map(function(k) { 
+      return room.players[k].playerNumber 
+    });
+
+    if (!playerNumbers.some(function(a){ return a === 1 })) player = Warbler.player1();
+    else if (!playerNumbers.some(function(a){ return a === 2 })) player = Warbler.player2();
+    else if (!playerNumbers.some(function(a){ return a === 3 })) player = Warbler.player3();
+    else if (!playerNumbers.some(function(a){ return a === 4 })) player = Warbler.player4();
+    else console.log("WTF HAPPENED MATE");
+
+    player.id = socket;
     room.players[socket] = player;
     this.roomsByPlayer[socket] = room;
   }
